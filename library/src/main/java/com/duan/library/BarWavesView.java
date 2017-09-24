@@ -13,7 +13,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import java.util.Arrays;
-import java.util.Random;
 
 /**
  * Created by DuanJiaNing on 2017/9/24.
