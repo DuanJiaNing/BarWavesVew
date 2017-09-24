@@ -3,11 +3,17 @@ package com.duan.barwavesvew.controller;
 import android.content.Context;
 import android.database.Cursor;
 import android.media.MediaPlayer;
+import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import static android.content.ContentValues.TAG;
+import static android.media.audiofx.Visualizer.getMaxCaptureRate;
 
 /**
  * Created by DuanJiaNing on 2017/4/1.
@@ -21,14 +27,13 @@ public class MediaController implements PlayControl {
 
     private volatile boolean mPlayState = false; //true为正在播放
 
-    private static MediaController mediaController = null;
-
     private final ArrayList<SongInfo> songs = new ArrayList<>();
 
     private final MediaPlayer mPlayer;
+    private Visualizer mVisualizer;
+    private boolean mVisualizerEnable = false;
 
-    private MediaController(Context context) {
-
+    public MediaController(Context context) {
         this.mContext = context.getApplicationContext();
 
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
@@ -42,8 +47,78 @@ public class MediaController implements PlayControl {
         }
         cursor.close();
 
-        mPlayer = new MediaPlayer();
+        if (songs.size() < 0) {
+            throw new IllegalStateException("没有歌曲");
+        }
 
+        mPlayer = new MediaPlayer();
+        try {
+            setCurrentSong(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public interface onFftDataCaptureListener {
+        void onFftCapture(float[] fft);
+    }
+
+    public void setupVisualizer(final int size, int rate, final onFftDataCaptureListener l) {
+
+        mVisualizer = new Visualizer(mPlayer.getAudioSessionId());
+        mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]); //0为128；1为1024
+        mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+
+            @Override
+            public void onWaveFormDataCapture(Visualizer visualizer, byte[] waveform, int samplingRate) {
+                //快速傅里叶变换有关的数据
+
+            }
+
+            @Override
+            public void onFftDataCapture(Visualizer visualizer, byte[] fft, int samplingRate) {
+                //波形数据
+
+                byte[] model = new byte[fft.length / 2 + 1];
+                model[0] = (byte) Math.abs(fft[1]);
+                int j = 1;
+
+                for (int i = 2; i < size * 2; ) {
+                    model[j] = (byte) Math.hypot(fft[i], fft[i + 1]);
+                    i += 2;
+                    j++;
+                }
+
+                float max = model[0];
+                for (int i = 0; i < size; i++) {
+                    if (model[i] > max) {
+                        max = model[i];
+                    }
+                }
+
+                float[] data = new float[size];
+                if (max != 0) {
+                    for (int i = 0; i < size; i++) {
+                        data[i] = (float) model[i] / max;
+                        data[i] = data[i] < 0 ? 0 : data[i];
+                    }
+                } else {
+                    Arrays.fill(data, 0);
+                }
+
+                l.onFftCapture(data);
+
+            } // getMaxCaptureRate() / 4
+        }, getMaxCaptureRate(), false, true);
+
+        mVisualizer.setEnabled(false); //这个设置必须在参数设置之后，表示开始采样
+    }
+
+    public void setVisualizerEnable(boolean visualizerEnable) {
+        this.mVisualizerEnable = visualizerEnable;
+        if (mPlayer.isPlaying()) {
+            mVisualizer.setEnabled(mVisualizerEnable);
+        }
     }
 
     private String getAlbumArtPicPath(String albumId) {
@@ -61,12 +136,6 @@ public class MediaController implements PlayControl {
         }
         cur.close();
         return imagePath;
-    }
-
-    public static synchronized MediaController getMediaController(Context context) {
-        if (mediaController == null)
-            mediaController = new MediaController(context);
-        return mediaController;
     }
 
     public ArrayList<SongInfo> getSongsList() {
@@ -96,8 +165,13 @@ public class MediaController implements PlayControl {
     }
 
     public void releaseMediaPlayer() {
-        if (mPlayer != null)
+        if (mPlayer != null) {
             mPlayer.release();
+        }
+
+        if (mVisualizer != null) {
+            mVisualizer.release();
+        }
     }
 
     @Override
@@ -116,15 +190,17 @@ public class MediaController implements PlayControl {
 
     private synchronized void changeSong() throws IOException {
 
-        if (mPlayState)
+        if (mPlayState) {
             mPlayer.stop();
+        }
 
         mPlayer.reset();
         mPlayer.setDataSource(songs.get(mCurrentSong).getSongPath());
         mPlayer.prepare();
 
-        if (mPlayState)
+        if (mPlayState) {
             mPlayer.start();
+        }
 
     }
 
@@ -148,6 +224,9 @@ public class MediaController implements PlayControl {
             return false;
         else {
             mPlayer.start();
+            if (mVisualizerEnable) {
+                mVisualizer.setEnabled(true);
+            }
             mPlayState = true;
             return true;
         }
@@ -163,6 +242,9 @@ public class MediaController implements PlayControl {
             return false;
         else {
             mPlayer.pause();
+            if (mVisualizerEnable) {
+                mVisualizer.setEnabled(false);
+            }
             mPlayState = false;
             return true;
         }

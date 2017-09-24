@@ -7,9 +7,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
@@ -25,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private BarWavesView barWavesView;
     private TextView name;
     private MediaController controller;
+    private Switch switcz;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,13 +35,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         init();
-
         testSetColor();
-
     }
 
     private void testSetColor() {
-//        barWavesView.setBarColor(ColorUtils.getRandomColor());
+        barWavesView.setBarColor(ColorUtils.getRandomColor());
 //        barWavesView.setWaveColor(ColorUtils.getRandomColor());
 
         int[][] cs = new int[barWavesView.getWaveNumber()][2];
@@ -55,6 +56,14 @@ public class MainActivity extends AppCompatActivity {
         switcher = (ImageSwitcher) findViewById(R.id.image_switch);
         name = (TextView) findViewById(R.id.name);
         barWavesView = (BarWavesView) findViewById(R.id.BarWavesView);
+        switcz = (Switch) findViewById(R.id.visuall);
+
+        switcz.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                controller.setVisualizerEnable(isChecked);
+            }
+        });
 
         switcher.setFactory(new ViewSwitcher.ViewFactory() {
             @Override
@@ -67,14 +76,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        controller = MediaController.getMediaController(this);
-        try {
-            controller.setCurrentSong(0);
-            update(controller.getSongsList().get(0));
+        controller = new MediaController(this);
+        controller.setupVisualizer(barWavesView.getWaveNumber(), 100, new MediaController.onFftDataCaptureListener() {
+            @Override
+            public void onFftCapture(float[] fft) {
+                barWavesView.setWaveHeight(fft);
+                testSetColor();
+            }
+        });
+        controller.setVisualizerEnable(true);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        update(controller.getSongsList().get(0));
     }
 
     @Override

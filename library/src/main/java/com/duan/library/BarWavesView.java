@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -79,16 +80,7 @@ public class BarWavesView extends View {
         mPaint.setAntiAlias(true);
         mBarColor = sDEFAULT_BAR_COLOR;
         setWaveColors(sMIN_WAVE_NUMBER, sDEFAULT_WAVE_COLOR);
-        initWaveHeight();
-    }
-
-    private void initWaveHeight() {
-        mWaveHeight = new float[mWaveNumber];
-        Random random = new Random();
-
-        for (int i = 0; i < mWaveHeight.length; i++) {
-            mWaveHeight[i] = random.nextFloat();
-        }
+        setWaveHeights(0);
     }
 
     public BarWavesView(Context context, @Nullable AttributeSet attrs) {
@@ -127,7 +119,7 @@ public class BarWavesView extends View {
         array.recycle();
 
         setWaveColors(mWaveNumber, tempWaveColor);
-        initWaveHeight();
+        setWaveHeights(0);
 
     }
 
@@ -219,7 +211,13 @@ public class BarWavesView extends View {
             }
 
             float bottom = getHeight() - mBarHeight;
-            float top = bottom - (mWaveHeight[i] * mWaveRange);
+            float fs = mWaveHeight[i];
+            float top;
+            if (fs == 0.0f) {
+                top = bottom - mWaveMinHeight;
+            } else {
+                top = bottom - (fs * mWaveRange);
+            }
             LinearGradient lg = new LinearGradient(
                     left, bottom,
                     right, top,
@@ -306,6 +304,14 @@ public class BarWavesView extends View {
             return;
         }
         mWaveHeight = hs;
+    }
+
+    private void setWaveHeights(float h) {
+        if (h > 1 || h < 0) {
+            return;
+        }
+        mWaveHeight = new float[mWaveNumber];
+        Arrays.fill(mWaveHeight, h);
     }
 
     // len 不能小于 mWaveNumber  数组第二维长度不能小于 2

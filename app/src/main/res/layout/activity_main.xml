@@ -28,19 +28,29 @@
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
             app:barColor="@color/colorPrimaryDark"
-            app:barHeight="20dp"
+            app:barHeight="15dp"
 
             app:layout_constraintBottom_toTopOf="@+id/name"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:waveColor="@color/colorAccent"
-            app:waveMinHeight="20dp"
-            app:waveNumber="30"
+            app:waveMinHeight="10dp"
+            app:waveNumber="40"
             app:waveRange="120dp"
-            app:waveWidth="8dp"
+            app:waveWidth="5dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp" />
+
+        <Switch
+            android:checked="true"
+            android:id="@+id/visuall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="16dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="16dp" />
 
         <TextView
             android:id="@+id/name"
