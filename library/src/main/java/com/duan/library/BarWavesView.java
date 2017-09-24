@@ -12,6 +12,8 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.util.Random;
+
 /**
  * Created by DuanJiaNing on 2017/9/24.
  * 当为控件指定宽和高时，mWaveInterval 将由控件计算
@@ -58,6 +60,7 @@ public class BarWavesView extends View {
     private final Paint mPaint = new Paint();
 
     private int[][] mWaveColors;
+    private float[] mWaveHeight;
 
     private final static int sDEFAULT_BAR_COLOR = Color.DKGRAY;
     private final static int sDEFAULT_WAVE_COLOR = Color.GRAY;
@@ -74,8 +77,18 @@ public class BarWavesView extends View {
     public BarWavesView(Context context) {
         super(context);
         mPaint.setAntiAlias(true);
-        setWaveColors(sMIN_WAVE_NUMBER, sDEFAULT_WAVE_COLOR);
         mBarColor = sDEFAULT_BAR_COLOR;
+        setWaveColors(sMIN_WAVE_NUMBER, sDEFAULT_WAVE_COLOR);
+        initWaveHeight();
+    }
+
+    private void initWaveHeight() {
+        mWaveHeight = new float[mWaveNumber];
+        Random random = new Random();
+
+        for (int i = 0; i < mWaveHeight.length; i++) {
+            mWaveHeight[i] = random.nextFloat();
+        }
     }
 
     public BarWavesView(Context context, @Nullable AttributeSet attrs) {
@@ -114,6 +127,7 @@ public class BarWavesView extends View {
         array.recycle();
 
         setWaveColors(mWaveNumber, tempWaveColor);
+        initWaveHeight();
 
     }
 
@@ -197,16 +211,17 @@ public class BarWavesView extends View {
 
     private void drawWaves(Canvas canvas) {
 
-        int re = mWaveMinHeight;
         for (int i = 0; i < mWaveNumber; i++) {
-            int left = mWaveWidth * i + mWaveInterval * i;
-            int right = left + mWaveWidth;
+            float left = mWaveWidth * i + mWaveInterval * i;
+            float right = left + mWaveWidth;
+            if (i == mWaveNumber - 1) {
+                right = getWidth();
+            }
 
-            int bottom = getHeight() - mBarHeight;
-            // FIXME
-            int top = bottom - (i * i + mWaveMinHeight);
+            float bottom = getHeight() - mBarHeight;
+            float top = bottom - (mWaveHeight[i] * mWaveRange);
             LinearGradient lg = new LinearGradient(
-                    left, top,
+                    left, bottom,
                     right, top,
                     mWaveColors[i],
                     null,
@@ -224,16 +239,31 @@ public class BarWavesView extends View {
         canvas.drawRect(0, getHeight() - mBarHeight, getWidth(), getHeight(), mPaint);
     }
 
+    /**
+     * 设置横条颜色
+     *
+     * @param color 颜色
+     */
     public void setBarColor(@ColorInt int color) {
         this.mBarColor = color;
         invalidate();
     }
 
+    /**
+     * 统一设置所有波浪条的颜色
+     *
+     * @param color 颜色
+     */
     public void setWaveColor(@ColorInt int color) {
         setWaveColors(mWaveNumber, color);
         invalidate();
     }
 
+    /**
+     * 设置每一个波浪条的渐变颜色
+     *
+     * @param color 颜色
+     */
     public void setWaveColor(int[][] color) {
         if (color == null || color.length < mWaveNumber || color[0].length < 2) {
             return;
@@ -242,6 +272,11 @@ public class BarWavesView extends View {
         invalidate();
     }
 
+    /**
+     * 设置每一个波浪条的纯颜色
+     *
+     * @param color 颜色
+     */
     public void setWaveColor(int[] color) {
         if (color == null || color.length < mWaveNumber) {
             return;
@@ -254,6 +289,23 @@ public class BarWavesView extends View {
         setWaveColors(cs.length, cs);
         invalidate();
 
+    }
+
+    /**
+     * 改变波浪条的高度
+     *
+     * @param hs 0.0 - 1.0
+     */
+    public void setWaveHeight(float[] hs) {
+        setWaveHeights(hs);
+        invalidate();
+    }
+
+    private void setWaveHeights(float[] hs) {
+        if (hs == null || hs.length != mWaveNumber) {
+            return;
+        }
+        mWaveHeight = hs;
     }
 
     // len 不能小于 mWaveNumber  数组第二维长度不能小于 2
@@ -273,5 +325,33 @@ public class BarWavesView extends View {
             mWaveColors[i][0] = color;
             mWaveColors[i][1] = color;
         }
+    }
+
+    public int getBarColor() {
+        return mBarColor;
+    }
+
+    public int getBarHeight() {
+        return mBarHeight;
+    }
+
+    public int getWaveMinHeight() {
+        return mWaveMinHeight;
+    }
+
+    public int getWaveMaxHeight() {
+        return mWaveMinHeight + mWaveRange;
+    }
+
+    public int getWaveWidth() {
+        return mWaveWidth;
+    }
+
+    public int getWaveNumber() {
+        return mWaveNumber;
+    }
+
+    public float[] getWaveHeight() {
+        return mWaveHeight;
     }
 }
