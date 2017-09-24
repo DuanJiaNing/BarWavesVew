@@ -6,20 +6,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Rect;
 import android.graphics.Shader;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by DuanJiaNing on 2017/9/24.
- * 当为控件指定宽和高时，mWaveMaxHeight，mWaveInterval 将由控件计算
+ * 当为控件指定宽和高时，mWaveInterval 将由控件计算
  * 不支持 paddding
  */
 
@@ -64,8 +59,8 @@ public class BarWavesView extends View {
 
     private int[][] mWaveColors;
 
-    private final static int sDEFAULT_BAR_COLOR = Color.BLACK;
-    private final static int sDEFAULT_WAVE_COLOR = Color.RED;
+    private final static int sDEFAULT_BAR_COLOR = Color.DKGRAY;
+    private final static int sDEFAULT_WAVE_COLOR = Color.GRAY;
 
     private final static int sMIN_WAVE_NUMBER = 13;
     private final static int sMIN_BAR_HEIGHT = 0;
@@ -97,19 +92,19 @@ public class BarWavesView extends View {
         int tempWaveColor = array.getColor(R.styleable.BarWavesView_waveColor, sDEFAULT_WAVE_COLOR);
         mBarColor = array.getColor(R.styleable.BarWavesView_barColor, sDEFAULT_BAR_COLOR);
 
-        mBarHeight = array.getDimensionPixelSize(R.styleable.BarWavesView_barHeight, sMIN_BAR_HEIGHT);
+        mBarHeight = array.getDimensionPixelSize(R.styleable.BarWavesView_barHeight, 20);
         mBarHeight = mBarHeight < sMIN_BAR_HEIGHT ? sMIN_BAR_HEIGHT : mBarHeight;
 
-        mWaveRange = array.getDimensionPixelSize(R.styleable.BarWavesView_waveRange, sMIN_WAVE_RANGE);
+        mWaveRange = array.getDimensionPixelSize(R.styleable.BarWavesView_waveRange, 30);
         mWaveRange = mWaveRange < sMIN_WAVE_RANGE ? sMIN_WAVE_RANGE : mWaveRange;
 
         mWaveMinHeight = array.getDimensionPixelSize(R.styleable.BarWavesView_waveMinHeight, sMIN_WAVE_HEIGHT);
         mWaveMinHeight = mWaveMinHeight < sMIN_WAVE_HEIGHT ? sMIN_WAVE_HEIGHT : mWaveMinHeight;
 
-        mWaveWidth = array.getDimensionPixelSize(R.styleable.BarWavesView_waveWidth, sMIN_WAVE_WIDTH);
+        mWaveWidth = array.getDimensionPixelSize(R.styleable.BarWavesView_waveWidth, 10);
         mWaveWidth = mWaveWidth < sMIN_WAVE_WIDTH ? sMIN_WAVE_WIDTH : mWaveWidth;
 
-        mWaveInterval = array.getDimensionPixelSize(R.styleable.BarWavesView_waveInterval, sMIN_WAVE_INTERVAL);
+        mWaveInterval = array.getDimensionPixelSize(R.styleable.BarWavesView_waveInterval, 8);
         mWaveInterval = mWaveInterval < sMIN_WAVE_INTERVAL ? sMIN_WAVE_INTERVAL : mWaveInterval;
 
         mWaveNumber = array.getInteger(R.styleable.BarWavesView_waveNumber, sMIN_WAVE_NUMBER);
@@ -133,6 +128,8 @@ public class BarWavesView extends View {
 
         if (widthMode == MeasureSpec.EXACTLY) {
             width = widthSize < sMIN_WIDTH ? sMIN_WIDTH : widthSize;
+            // 手动计算波浪条间距
+            mWaveInterval = (width - (mWaveWidth * mWaveNumber)) / (mWaveNumber - 1);
             adjustWidth(width);
         } else {//xml中宽度设为warp_content
             width = mWaveWidth * mWaveNumber + mWaveInterval * (mWaveNumber - 1);
@@ -200,25 +197,23 @@ public class BarWavesView extends View {
 
     private void drawWaves(Canvas canvas) {
 
-        final Rect rect = new Rect();
+        int re = mWaveMinHeight;
         for (int i = 0; i < mWaveNumber; i++) {
             int left = mWaveWidth * i + mWaveInterval * i;
             int right = left + mWaveWidth;
 
             int bottom = getHeight() - mBarHeight;
             // FIXME
-            int top = bottom - (Math.round(mWaveRange) + mWaveMinHeight);
-            rect.set(left, top, right, bottom);
+            int top = bottom - (i * i + mWaveMinHeight);
             LinearGradient lg = new LinearGradient(
-                    rect.left, rect.top,
-                    rect.right, rect.top,
+                    left, top,
+                    right, top,
                     mWaveColors[i],
                     null,
                     Shader.TileMode.CLAMP
             );
             mPaint.setShader(lg);
-            canvas.drawRect(rect, mPaint);
-            Log.d(TAG, "drawWaves: " + rect.toString());
+            canvas.drawRect(left, top, right, bottom, mPaint);
         }
 
     }

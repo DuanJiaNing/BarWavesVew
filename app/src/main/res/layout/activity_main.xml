@@ -7,16 +7,23 @@
     tools:context="com.duan.barwavesvew.MainActivity">
 
     <com.duan.library.BarWavesView
-        android:layout_width="0dp"
-        android:layout_height="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
-        app:barHeight="10dp"
-        app:waveRange="60dp"
+        app:barColor="@color/colorPrimaryDark"
+        app:barHeight="20dp"
         app:layout_constraintLeft_toLeftOf="parent"
+
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:waveColor="@color/colorAccent"
+        app:waveInterval="8dp"
+        app:waveMinHeight="20dp"
+        app:waveNumber="18"
+        app:waveRange="120dp"
+        app:waveWidth="5dp" />
 
     <TextView
         android:id="@+id/name"
