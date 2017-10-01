@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         controller = new MediaController(this);
-        controller.setupVisualizer(barWavesView.getWaveNumber(), 2000, new MediaController.onFftDataCaptureListener() {
+        controller.setupVisualizer(barWavesView.getWaveNumber(), 50, new MediaController.onFftDataCaptureListener() {
             @Override
             public void onFftCapture(float[] fft) {
                 barWavesView.setWaveHeight(fft);

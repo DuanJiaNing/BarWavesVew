@@ -36,9 +36,9 @@
             app:layout_constraintTop_toTopOf="parent"
             app:waveColor="@color/colorAccent"
             app:waveMinHeight="10dp"
-            app:waveNumber="40"
+            app:waveNumber="60"
             app:waveRange="120dp"
-            app:waveWidth="5dp"
+            app:waveWidth="3dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp" />
 

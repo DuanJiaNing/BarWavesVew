@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.util.Log;
 
@@ -63,10 +64,16 @@ public class MediaController implements PlayControl {
         void onFftCapture(float[] fft);
     }
 
-    public void setupVisualizer(final int size, int rate, final onFftDataCaptureListener l) {
-
+    /**
+     * 设置频谱回调
+     * @param size 传回的数组大小
+     * @param max 整体频率的大小，该值越小，传回数组的平均值越大，在 50 时效果较好。
+     * @param l 回调
+     */
+    public void setupVisualizer(final int size, final int max, final onFftDataCaptureListener l) {
+        // 频率分之一是时间  赫兹=1/秒
         mVisualizer = new Visualizer(mPlayer.getAudioSessionId());
-        mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]); //0为128；1为1024
+        mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[0]); //0为128；1为1024
         mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
 
             @Override
@@ -88,15 +95,6 @@ public class MediaController implements PlayControl {
                     i += 2;
                     j++;
                 }
-                Log.e("fft",Arrays.toString(model));
-
-
-                float max = model[0];
-                for (int i = 0; i < size; i++) {
-                    if (model[i] > max) {
-                        max = model[i];
-                    }
-                }
 
                 float[] data = new float[size];
                 if (max != 0) {
@@ -110,8 +108,8 @@ public class MediaController implements PlayControl {
 
                 l.onFftCapture(data);
 
-            } // getMaxCaptureRate() / 4
-        }, rate, false, true);
+            } // getMaxCaptureRate() -> 20000 最快
+        }, getMaxCaptureRate() / 6, false, true);
 
         mVisualizer.setEnabled(false); //这个设置必须在参数设置之后，表示开始采样
     }
