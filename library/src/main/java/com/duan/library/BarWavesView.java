@@ -1,5 +1,8 @@
 package com.duan.library;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -11,6 +14,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 import java.util.Arrays;
 
@@ -61,6 +65,7 @@ public class BarWavesView extends View {
 
     private int[][] mWaveColors;
     private float[] mWaveHeight;
+    private ValueAnimator mAnim;
 
     private final static int sDEFAULT_BAR_COLOR = Color.DKGRAY;
     private final static int sDEFAULT_WAVE_COLOR = Color.GRAY;
@@ -80,6 +85,23 @@ public class BarWavesView extends View {
         mBarColor = sDEFAULT_BAR_COLOR;
         setWaveColors(sMIN_WAVE_NUMBER, sDEFAULT_WAVE_COLOR);
         setWaveHeights(0);
+        initAnim();
+    }
+
+    private void initAnim() {
+        mAnim = ObjectAnimator.ofFloat(1.0f, 0.0f);
+        mAnim.setInterpolator(new AccelerateDecelerateInterpolator());
+        mAnim.setDuration(1000);
+        mAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float v = (float) animation.getAnimatedValue();
+                for (int i = 0; i < mWaveHeight.length; i++) {
+                    mWaveHeight[i] *= v;
+                }
+                invalidate();
+            }
+        });
     }
 
     public BarWavesView(Context context, @Nullable AttributeSet attrs) {
@@ -119,6 +141,7 @@ public class BarWavesView extends View {
 
         setWaveColors(mWaveNumber, tempWaveColor);
         setWaveHeights(0);
+        initAnim();
 
     }
 
@@ -212,11 +235,7 @@ public class BarWavesView extends View {
             float bottom = getHeight() - mBarHeight;
             float fs = mWaveHeight[i];
             float top;
-            if (fs == 0.0f) {
-                top = bottom - mWaveMinHeight;
-            } else {
-                top = bottom - (fs * mWaveRange);
-            }
+            top = bottom - mWaveMinHeight - (fs * mWaveRange);
             LinearGradient lg = new LinearGradient(
                     left, bottom,
                     right, top,
@@ -294,8 +313,14 @@ public class BarWavesView extends View {
      * @param hs 0.0 - 1.0
      */
     public void setWaveHeight(float[] hs) {
+        if (mAnim.isStarted() || mAnim.isRunning()) {
+            mAnim.cancel();
+        }
+
         setWaveHeights(hs);
         invalidate();
+
+        mAnim.start();
     }
 
     private void setWaveHeights(float[] hs) {

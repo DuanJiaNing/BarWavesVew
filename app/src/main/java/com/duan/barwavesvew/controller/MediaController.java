@@ -88,6 +88,8 @@ public class MediaController implements PlayControl {
                     i += 2;
                     j++;
                 }
+                Log.e("fft",Arrays.toString(model));
+
 
                 float max = model[0];
                 for (int i = 0; i < size; i++) {
@@ -109,7 +111,7 @@ public class MediaController implements PlayControl {
                 l.onFftCapture(data);
 
             } // getMaxCaptureRate() / 4
-        }, getMaxCaptureRate(), false, true);
+        }, rate, false, true);
 
         mVisualizer.setEnabled(false); //这个设置必须在参数设置之后，表示开始采样
     }
