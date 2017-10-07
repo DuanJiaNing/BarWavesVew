@@ -3,14 +3,9 @@
 
 ## 截图
 <p align="center">
-<table>
-<tr>
 <img width="150px" src="https://raw.githubusercontent.com/DuanJiaNing/BarWavesVew/master/screenshort.gif">
-</tr>
-<tr >
+<hr>
 <img src="https://raw.githubusercontent.com/DuanJiaNing/BarWavesVew/master/screenshort01.gif">
-</tr>
-</table>
 </p>
 
 ## 说明
