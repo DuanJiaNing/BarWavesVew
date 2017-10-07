@@ -2,15 +2,16 @@
 ### 为媒体资源播放打造的“条形与波浪”可视化效果
 
 ## 截图
-
+<p align="center">
 <table>
-<tr align="center">
+<tr>
+<img width="150px" src="https://raw.githubusercontent.com/DuanJiaNing/BarWavesVew/master/screenshort.gif">
+</tr>
+<tr >
 <img src="https://raw.githubusercontent.com/DuanJiaNing/BarWavesVew/master/screenshort01.gif">
 </tr>
-<tr align="center">
-<img src="https://raw.githubusercontent.com/DuanJiaNing/BarWavesVew/master/screenshort.gif">
-</tr>
 </table>
+</p>
 
 ## 说明
 
