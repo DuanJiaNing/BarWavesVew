@@ -4,8 +4,8 @@
 ## 截图
 <table>
   <tr>
-    <td><img width="300px" height="360px" src="https://raw.githubusercontent.com/DuanJiaNing/BarWavesVew/master/screenshort.gif"></td>
-    <td><img width="700px" height="360px" src="https://raw.githubusercontent.com/DuanJiaNing/BarWavesVew/master/screenshort01.gif"></td>
+    <td><img width="300px" height="380px" src="https://raw.githubusercontent.com/DuanJiaNing/BarWavesVew/master/screenshort.gif"></td>
+    <td><img width="700px" height="380px" src="https://raw.githubusercontent.com/DuanJiaNing/BarWavesVew/master/screenshort01.gif"></td>
   </tr>
 </table>
 
