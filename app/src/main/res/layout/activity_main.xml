@@ -21,26 +21,32 @@
 
         <com.duan.library.BarWavesView
             android:id="@+id/BarWavesView"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
-            app:barColor="@color/colorPrimaryDark"
-            app:barHeight="15dp"
-
-            app:layout_constraintBottom_toTopOf="@+id/name"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:waveColor="@color/colorAccent"
-            app:waveMinHeight="10dp"
-            app:waveNumber="60"
+
+            app:barColor="#d1d1d1"
+            app:barHeight="25dp"
+
+            app:waveColor="#ffd500"
+            app:waveMinHeight="30dp"
+
             app:waveRange="120dp"
-            app:waveWidth="3dp"
+
+            app:waveNumber="35"
+            app:waveWidth="13dp"
+            app:waveInterval="3dp"
+
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="8dp"
+            app:layout_constraintHorizontal_bias="0.501"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/name" />
 
         <Switch
             android:checked="true"
@@ -50,7 +56,8 @@
             android:layout_marginRight="16dp"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp" />
 
         <TextView
             android:id="@+id/name"
@@ -110,7 +117,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.5"
-            tools:layout_editor_absoluteX="180dp"
+            tools:layout_editor_absoluteX="192dp"
             tools:layout_editor_absoluteY="81dp" />
 
     </android.support.constraint.ConstraintLayout>

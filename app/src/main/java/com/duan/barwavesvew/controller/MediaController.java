@@ -91,6 +91,7 @@ public class MediaController implements PlayControl {
                 int j = 1;
 
                 for (int i = 2; i < size * 2; ) {
+
                     model[j] = (byte) Math.hypot(fft[i], fft[i + 1]);
                     i += 2;
                     j++;

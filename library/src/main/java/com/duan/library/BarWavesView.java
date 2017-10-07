@@ -1,6 +1,5 @@
 package com.duan.library;
 
-import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -70,12 +69,16 @@ public class BarWavesView extends View {
     private final static int sDEFAULT_BAR_COLOR = Color.DKGRAY;
     private final static int sDEFAULT_WAVE_COLOR = Color.GRAY;
 
+    /**
+     * xml 中指定的值小于以下值时无效
+     */
     private final static int sMIN_WAVE_NUMBER = 13;
     private final static int sMIN_BAR_HEIGHT = 0;
-    private final static int sMIN_WAVE_HEIGHT = 10;
+    private final static int sMIN_WAVE_HEIGHT = 0;
     private final static int sMIN_WAVE_RANGE = 10;
     private final static int sMIN_WAVE_INTERVAL = 0;
     private final static int sMIN_WAVE_WIDTH = 5;
+    // 控件的宽度由波浪条数量、宽度、间距共同决定
     private final static int sMIN_WIDTH = sMIN_WAVE_NUMBER * sMIN_WAVE_WIDTH + (sMIN_WAVE_NUMBER - 1) * sMIN_WAVE_INTERVAL;
     private final static int sMIN_HEIGHT = sMIN_WAVE_HEIGHT + sMIN_WAVE_RANGE + sMIN_BAR_HEIGHT;
 
@@ -156,8 +159,7 @@ public class BarWavesView extends View {
 
         if (widthMode == MeasureSpec.EXACTLY) {
             width = widthSize < sMIN_WIDTH ? sMIN_WIDTH : widthSize;
-            // 手动计算波浪条间距
-            mWaveInterval = (width - (mWaveWidth * mWaveNumber)) / (mWaveNumber - 1);
+            // 手动计算波浪条间距，即宽为指定长度时，波浪条间距自动计算（xml 中指定将失效）
             adjustWidth(width);
         } else {//xml中宽度设为warp_content
             width = mWaveWidth * mWaveNumber + mWaveInterval * (mWaveNumber - 1);
@@ -176,7 +178,7 @@ public class BarWavesView extends View {
 
     private void adjustWidth(int width) {
 
-        while ((width - mWaveWidth * mWaveNumber) < mWaveInterval * (mWaveNumber - 1)) {
+        while (width < mWaveInterval * (mWaveNumber - 1) + mWaveWidth * mWaveNumber) {
             if (mWaveInterval > sMIN_WAVE_INTERVAL) {
                 mWaveInterval--; // 首选调整波浪条间距
             } else {
@@ -228,9 +230,6 @@ public class BarWavesView extends View {
         for (int i = 0; i < mWaveNumber; i++) {
             float left = mWaveWidth * i + mWaveInterval * i;
             float right = left + mWaveWidth;
-            if (i == mWaveNumber - 1) {
-                right = getWidth();
-            }
 
             float bottom = getHeight() - mBarHeight;
             float fs = mWaveHeight[i];
@@ -252,7 +251,9 @@ public class BarWavesView extends View {
     private void drawBar(Canvas canvas) {
         mPaint.setShader(null);
         mPaint.setColor(mBarColor);
-        canvas.drawRect(0, getHeight() - mBarHeight, getWidth(), getHeight(), mPaint);
+        float right = mWaveInterval * (mWaveNumber - 1) + mWaveWidth * mWaveNumber;
+        float top = getHeight() - mBarHeight;
+        canvas.drawRect(0, top, right, getHeight(), mPaint);
     }
 
     /**
