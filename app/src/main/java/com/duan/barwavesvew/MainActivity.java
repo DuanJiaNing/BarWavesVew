@@ -24,10 +24,15 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity {
 
     private ImageSwitcher switcher;
-    private BarWavesView barWavesView;
     private TextView name;
     private MediaController controller;
     private Switch switcz;
+
+    private BarWavesView barWavesView;
+    private BarWavesView barWavesView_1;
+    private BarWavesView barWavesView_2;
+    private BarWavesView barWavesView_2_;
+    private BarWavesView barWavesView_3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +58,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
 
+        barWavesView = (BarWavesView) findViewById(R.id.BarWavesView);
+        barWavesView_1 = (BarWavesView) findViewById(R.id.BarWavesView_1);
+        barWavesView_2 = (BarWavesView) findViewById(R.id.BarWavesView_2);
+        barWavesView_2_ = (BarWavesView) findViewById(R.id.BarWavesView_2_);
+        barWavesView_3 = (BarWavesView) findViewById(R.id.BarWavesView_3);
+
+
         switcher = (ImageSwitcher) findViewById(R.id.image_switch);
         name = (TextView) findViewById(R.id.name);
-        barWavesView = (BarWavesView) findViewById(R.id.BarWavesView);
         switcz = (Switch) findViewById(R.id.visuall);
 
         switcz.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -81,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFftCapture(float[] fft) {
                 barWavesView.setWaveHeight(fft);
+                barWavesView_1.setWaveHeight(fft);
+                barWavesView_2.setWaveHeight(fft);
+                barWavesView_2_.setWaveHeight(fft);
+                barWavesView_3.setWaveHeight(fft);
+
 //                testSetColor();
             }
         });

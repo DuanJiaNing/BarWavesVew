@@ -110,7 +110,7 @@ public class MediaController implements PlayControl {
                 l.onFftCapture(data);
 
             } // getMaxCaptureRate() -> 20000 最快
-        }, getMaxCaptureRate() / 6, false, true);
+        }, getMaxCaptureRate() / 8, false, true);
 
         mVisualizer.setEnabled(false); //这个设置必须在参数设置之后，表示开始采样
     }

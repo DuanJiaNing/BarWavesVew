@@ -15,6 +15,42 @@
         android:inAnimation="@android:anim/fade_in"
         android:outAnimation="@android:anim/fade_out" />
 
+    <com.duan.library.BarWavesView
+        android:id="@+id/BarWavesView_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-230dp"
+
+        app:waveNumber="35"
+        app:waveWidth="30dp"
+        app:waveRange="600dp"
+        app:waveMinHeight="0dp"
+        app:waveInterval="5dp"
+
+        app:waveColor="#7eaeaeae"
+        app:barHeight="0dp"
+
+        />
+
+    <com.duan.library.BarWavesView
+        android:id="@+id/BarWavesView_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:rotation="210"
+        android:layout_marginLeft="-200dp"
+        android:layout_marginTop="140dp"
+
+        app:waveNumber="35"
+        app:waveWidth="20dp"
+        app:waveRange="300dp"
+        app:waveMinHeight="10dp"
+
+        app:barColor="#ffffff"
+        app:waveColor="#ff00bb"
+        app:barHeight="2px"
+        />
+
+
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -23,41 +59,80 @@
             android:id="@+id/BarWavesView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
 
             app:barColor="#d1d1d1"
             app:barHeight="25dp"
 
-            app:waveColor="#ffd500"
-            app:waveMinHeight="30dp"
-
-            app:waveRange="120dp"
-
-            app:waveNumber="35"
-            app:waveWidth="13dp"
-            app:waveInterval="3dp"
-
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/name"
             app:layout_constraintHorizontal_bias="0.501"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/name" />
+
+            app:layout_constraintLeft_toLeftOf="parent"
+
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:waveColor="#ffd500"
+
+            app:waveInterval="3dp"
+            app:waveMinHeight="30dp"
+            app:waveNumber="35"
+            app:waveRange="120dp"
+            app:waveWidth="13dp" />
+
+        <com.duan.library.BarWavesView
+            android:id="@+id/BarWavesView_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:waveNumber="35"
+            app:waveWidth="7dp"
+            app:waveRange="60dp"
+            app:waveMinHeight="10dp"
+            app:waveInterval="0dp"
+
+            app:barColor="#41000000"
+            app:waveColor="#00ffaa"
+            app:barHeight="0dp"
+
+            android:layout_marginRight="8dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="8dp" />
+
+        <com.duan.library.BarWavesView
+            android:id="@+id/BarWavesView_2_"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:waveNumber="35"
+            app:waveWidth="7dp"
+            app:waveRange="60dp"
+            android:rotationX="180"
+            app:waveMinHeight="10dp"
+            app:waveInterval="0dp"
+
+            app:barColor="#41000000"
+            app:waveColor="#4e00ffaa"
+            app:barHeight="0dp"
+
+            android:layout_marginTop="0dp"
+            app:layout_constraintTop_toBottomOf="@+id/BarWavesView_2"
+            android:layout_marginRight="8dp"
+            app:layout_constraintRight_toRightOf="parent" />
 
         <Switch
-            android:checked="true"
             android:id="@+id/visuall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp" />
+            android:checked="true"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/name"
@@ -76,14 +151,14 @@
             android:id="@+id/pre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:onClick="onPre"
             android:text="上一曲"
             app:layout_constraintBottom_toBottomOf="@+id/play"
             app:layout_constraintRight_toLeftOf="@+id/play"
             app:layout_constraintTop_toTopOf="@+id/play"
-            app:layout_constraintVertical_bias="0.0"
-            android:layout_marginEnd="8dp" />
+            app:layout_constraintVertical_bias="0.0" />
 
 
         <Button

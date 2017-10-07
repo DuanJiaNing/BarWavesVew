@@ -60,14 +60,19 @@ public class BarWavesView extends View {
      */
     private int mWaveInterval;
 
+    /**
+     * 波浪条落下时是否使用动画
+     */
+    private boolean fallAnimEnable = true;
+
     private final Paint mPaint = new Paint();
 
     private int[][] mWaveColors;
     private float[] mWaveHeight;
     private ValueAnimator mAnim;
 
-    private final static int sDEFAULT_BAR_COLOR = Color.DKGRAY;
-    private final static int sDEFAULT_WAVE_COLOR = Color.GRAY;
+    private final static int sDEFAULT_BAR_COLOR = Color.LTGRAY;
+    private final static int sDEFAULT_WAVE_COLOR = Color.YELLOW;
 
     /**
      * xml 中指定的值小于以下值时无效
@@ -94,7 +99,7 @@ public class BarWavesView extends View {
     private void initAnim() {
         mAnim = ObjectAnimator.ofFloat(1.0f, 0.0f);
         mAnim.setInterpolator(new AccelerateDecelerateInterpolator());
-        mAnim.setDuration(1000);
+        mAnim.setDuration(1300);
         mAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -127,7 +132,7 @@ public class BarWavesView extends View {
         mWaveRange = array.getDimensionPixelSize(R.styleable.BarWavesView_waveRange, 30);
         mWaveRange = mWaveRange < sMIN_WAVE_RANGE ? sMIN_WAVE_RANGE : mWaveRange;
 
-        mWaveMinHeight = array.getDimensionPixelSize(R.styleable.BarWavesView_waveMinHeight, sMIN_WAVE_HEIGHT);
+        mWaveMinHeight = array.getDimensionPixelSize(R.styleable.BarWavesView_waveMinHeight, 10);
         mWaveMinHeight = mWaveMinHeight < sMIN_WAVE_HEIGHT ? sMIN_WAVE_HEIGHT : mWaveMinHeight;
 
         mWaveWidth = array.getDimensionPixelSize(R.styleable.BarWavesView_waveWidth, 10);
@@ -242,6 +247,7 @@ public class BarWavesView extends View {
                     null,
                     Shader.TileMode.CLAMP
             );
+            mPaint.setAlpha(255);
             mPaint.setShader(lg);
             canvas.drawRect(left, top, right, bottom, mPaint);
         }
@@ -250,6 +256,7 @@ public class BarWavesView extends View {
 
     private void drawBar(Canvas canvas) {
         mPaint.setShader(null);
+        mPaint.setAlpha(255);
         mPaint.setColor(mBarColor);
         float right = mWaveInterval * (mWaveNumber - 1) + mWaveWidth * mWaveNumber;
         float top = getHeight() - mBarHeight;
@@ -311,17 +318,23 @@ public class BarWavesView extends View {
     /**
      * 改变波浪条的高度
      *
-     * @param hs 0.0 - 1.0
+     * @param hs 数值介于 0.0 - 1.0 的浮点数组，当值为 1.0 时波浪条将完全绘制（最高），0.0 时波浪条只绘制最低高度（最低）。
      */
     public void setWaveHeight(float[] hs) {
-        if (mAnim.isStarted() || mAnim.isRunning()) {
+        if (fallAnimEnable && (mAnim.isStarted() || mAnim.isRunning())) {
             mAnim.cancel();
         }
 
         setWaveHeights(hs);
         invalidate();
 
-        mAnim.start();
+        if (fallAnimEnable) {
+            mAnim.start();
+        }
+    }
+
+    public void setFallAnimEnable(boolean enable) {
+        this.fallAnimEnable = enable;
     }
 
     private void setWaveHeights(float[] hs) {
