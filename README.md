@@ -1,5 +1,5 @@
 
-### 为媒体资源播放打造的“条形与波浪”可视化效果
+## 为媒体资源播放打造的“条形与波浪”可视化效果
 
 ## 截图
 <table>
@@ -21,6 +21,8 @@
 - waveWidth  波浪条颜色
 - waveNumber  波浪条宽度
 - waveInterval  波浪条数量
+
+![](https://github.com/DuanJiaNing/Pictures/blob/master/barWaves/barWaves.jpg)
 
 ## 如何使用
 复制 library 下的 BarWavesView.java 文件到你的项目中，注意修改包名，同时复制 library 目录下的 attrs 中的属性到你自己的 attrs 中（如果没有 attrs
@@ -77,4 +79,4 @@ public class MainActivity extends AppCompatActivity {
 
 ## 原理解析
 
-参看博文：
+参看博文：[Android 自定义 View - 适用于音乐播放的“条形与波浪”可视化效果](http://blog.csdn.net/aimeimeiTS/article/details/78173635)
