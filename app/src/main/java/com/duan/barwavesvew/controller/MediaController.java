@@ -5,15 +5,12 @@ import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static android.content.ContentValues.TAG;
 import static android.media.audiofx.Visualizer.getMaxCaptureRate;
 
 /**
@@ -66,9 +63,10 @@ public class MediaController implements PlayControl {
 
     /**
      * 设置频谱回调
+     *
      * @param size 传回的数组大小
-     * @param max 整体频率的大小，该值越小，传回数组的平均值越大，在 50 时效果较好。
-     * @param l 回调
+     * @param max  整体频率的大小，该值越小，传回数组的平均值越大，在 50 时效果较好。
+     * @param l    回调
      */
     public void setupVisualizer(final int size, final int max, final onFftDataCaptureListener l) {
         // 频率分之一是时间  赫兹=1/秒
