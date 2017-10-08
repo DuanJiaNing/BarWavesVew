@@ -9,13 +9,18 @@ import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Shader;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import java.util.Arrays;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by DuanJiaNing on 2017/9/24.
@@ -32,38 +37,49 @@ public class BarWavesView extends View {
 
     /**
      * 横条高度
+     * fix
      */
     private int mBarHeight;
 
     /**
      * 波浪条最小高度
+     * fix
      */
     private int mWaveMinHeight;
 
     /**
      * 波浪条极差（最高与最低的差值）
+     * fix
      */
     private int mWaveRange;
 
     /**
      * 波浪条宽度
+     * fix
      */
     private int mWaveWidth;
 
     /**
      * 波浪条数量
+     * fix
      */
     private int mWaveNumber;
 
     /**
      * 波浪条间隔
+     * fix
      */
     private int mWaveInterval;
 
     /**
      * 波浪条落下时是否使用动画
      */
-    private boolean fallAnimEnable = true;
+    private boolean mFallAnimEnable = true;
+
+    /**
+     * 波浪条坠落时间（毫秒）
+     */
+    private int mFallDuration;
 
     private final Paint mPaint = new Paint();
 
@@ -73,6 +89,7 @@ public class BarWavesView extends View {
 
     private final static int sDEFAULT_BAR_COLOR = Color.LTGRAY;
     private final static int sDEFAULT_WAVE_COLOR = Color.YELLOW;
+    private final static int sDEFAULT_FALL_ANIM_DURATION = 1300;
 
     /**
      * xml 中指定的值小于以下值时无效
@@ -87,19 +104,24 @@ public class BarWavesView extends View {
     private final static int sMIN_WIDTH = sMIN_WAVE_NUMBER * sMIN_WAVE_WIDTH + (sMIN_WAVE_NUMBER - 1) * sMIN_WAVE_INTERVAL;
     private final static int sMIN_HEIGHT = sMIN_WAVE_HEIGHT + sMIN_WAVE_RANGE + sMIN_BAR_HEIGHT;
 
-    public BarWavesView(Context context) {
+    public BarWavesView(Context context, int waveNumber) {
         super(context);
-        mPaint.setAntiAlias(true);
-        mBarColor = sDEFAULT_BAR_COLOR;
+        this.mWaveNumber = waveNumber;
+        this.mPaint.setAntiAlias(true);
+        this.mBarColor = sDEFAULT_BAR_COLOR;
+        this.mFallAnimEnable = true;
+        this.mFallDuration = sDEFAULT_FALL_ANIM_DURATION;
+        setSaveEnabled(true);
+
+        initAnim(mFallDuration);
         setWaveColors(sMIN_WAVE_NUMBER, sDEFAULT_WAVE_COLOR);
         setWaveHeights(0);
-        initAnim();
     }
 
-    private void initAnim() {
+    private void initAnim(int dur) {
         mAnim = ObjectAnimator.ofFloat(1.0f, 0.0f);
         mAnim.setInterpolator(new AccelerateDecelerateInterpolator());
-        mAnim.setDuration(1300);
+        mAnim.setDuration(dur);
         mAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -118,6 +140,7 @@ public class BarWavesView extends View {
 
     public BarWavesView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        setSaveEnabled(true);
 
         mPaint.setAntiAlias(true);
 
@@ -144,13 +167,17 @@ public class BarWavesView extends View {
         mWaveNumber = array.getInteger(R.styleable.BarWavesView_waveNumber, sMIN_WAVE_NUMBER);
         mWaveNumber = mWaveNumber < sMIN_WAVE_NUMBER ? sMIN_WAVE_NUMBER : mWaveNumber;
 
+        mFallAnimEnable = array.getBoolean(R.styleable.BarWavesView_fallAutomatically, true);
+        mFallDuration = array.getInteger(R.styleable.BarWavesView_fallDuration, sDEFAULT_FALL_ANIM_DURATION);
+
         //释放资源
         array.recycle();
 
         setWaveColors(mWaveNumber, tempWaveColor);
         setWaveHeights(0);
-        initAnim();
-
+        if (mFallAnimEnable) {
+            initAnim(mFallDuration);
+        }
     }
 
     @Override
@@ -321,20 +348,148 @@ public class BarWavesView extends View {
      * @param hs 数值介于 0.0 - 1.0 的浮点数组，当值为 1.0 时波浪条将完全绘制（最高），0.0 时波浪条只绘制最低高度（最低）。
      */
     public void setWaveHeight(float[] hs) {
-        if (fallAnimEnable && (mAnim.isStarted() || mAnim.isRunning())) {
+        if (mFallAnimEnable && mAnim != null && (mAnim.isStarted() || mAnim.isRunning())) {
             mAnim.cancel();
         }
 
         setWaveHeights(hs);
         invalidate();
 
-        if (fallAnimEnable) {
+        if (mFallAnimEnable) {
+            if (mAnim == null) {
+                initAnim(mFallDuration);
+            }
             mAnim.start();
         }
     }
 
-    public void setFallAnimEnable(boolean enable) {
-        this.fallAnimEnable = enable;
+    public void setFallAutomatically(boolean enable) {
+        this.mFallAnimEnable = enable;
+        if (mFallAnimEnable && mAnim == null) {
+            initAnim(mFallDuration);
+        }
+    }
+
+    public void setFallDuration(int duration) {
+        this.mFallDuration = duration;
+        this.mFallAnimEnable = true;
+
+        releaseAnim();
+
+        initAnim(duration);
+
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        releaseAnim();
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState ss = new SavedState(superState);
+
+        ss.barColor = mBarColor;
+        ss.fallAnimEnable = mFallAnimEnable ? 1 : 0;
+        ss.fallDuration = mFallDuration;
+        ss.waveColors = mWaveColors;
+        ss.waveHeight = mWaveHeight;
+
+        Log.i(TAG, "onSaveInstanceState: " + ss.toString());
+        return ss;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if (!(state instanceof SavedState)) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
+        SavedState ss = (SavedState) state;
+        super.onRestoreInstanceState(ss.getSuperState());
+
+        mBarColor = ss.barColor;
+        mFallAnimEnable = ss.fallAnimEnable == 1;
+        mFallDuration = ss.fallDuration;
+        mWaveColors = ss.waveColors;
+        mWaveHeight = ss.waveHeight;
+
+        if (mFallAnimEnable) {
+            setFallDuration(mFallDuration);
+        }
+
+        Log.i(TAG, "onRestoreInstanceState: " + ss.toString());
+
+        requestLayout();
+    }
+
+    public static class SavedState extends BaseSavedState {
+
+        int barColor;
+        int fallAnimEnable;
+        int fallDuration;
+        int[][] waveColors;
+        float[] waveHeight;
+
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        private SavedState(Parcel in) {
+            super(in);
+            barColor = in.readInt();
+            fallAnimEnable = in.readInt();
+            fallDuration = in.readInt();
+            waveColors = (int[][]) in.readValue(null);
+            in.readFloatArray(waveHeight);
+
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeInt(barColor);
+            out.writeInt(fallAnimEnable);
+            out.writeInt(fallDuration);
+            out.writeValue(waveColors);
+            out.writeFloatArray(waveHeight);
+        }
+
+        public static final Parcelable.Creator<SavedState> CREATOR
+                = new Parcelable.Creator<SavedState>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
+
+        @Override
+        public String toString() {
+            return "SavedState{" +
+                    "barColor=" + barColor +
+                    ", fallAnimEnable=" + fallAnimEnable +
+                    ", fallDuration=" + fallDuration +
+                    ", waveColors=" + Arrays.toString(waveColors) +
+                    ", waveHeight=" + Arrays.toString(waveHeight) +
+                    '}';
+        }
+    }
+
+    private void releaseAnim() {
+        if (mAnim != null) {
+            if (mAnim.isStarted() || mAnim.isRunning()) {
+                mAnim.cancel();
+            }
+            mAnim.removeAllUpdateListeners();
+            mAnim.removeAllListeners();
+            mAnim = null;
+        }
+
     }
 
     private void setWaveHeights(float[] hs) {

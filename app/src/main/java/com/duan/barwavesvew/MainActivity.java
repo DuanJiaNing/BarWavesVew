@@ -1,8 +1,10 @@
 package com.duan.barwavesvew;
 
+import android.content.res.Configuration;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,6 +105,11 @@ public class MainActivity extends AppCompatActivity {
         controller.setVisualizerEnable(true);
 
         update(controller.getSongsList().get(0));
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 
     @Override

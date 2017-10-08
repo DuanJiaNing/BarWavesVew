@@ -15,6 +15,9 @@
         <attr name="waveWidth" format="dimension" /> <!--波浪条宽度-->
         <attr name="waveNumber" format="integer" /> <!--波浪条数量-->
         <attr name="waveInterval" format="dimension" /> <!--波浪间隔-->
+
+        <attr name="fallAutomatically" format="boolean"/> <!--波浪条高度大于最小高度时自动坠落-->
+        <attr name="fallDuration" format="integer" /> <!--波浪条坠落事件（毫秒，默认 1300）-->
     </declare-styleable>
 
 </resources>

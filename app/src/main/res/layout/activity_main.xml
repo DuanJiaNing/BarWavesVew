@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
+    android:saveEnabled="true"
     tools:context="com.duan.barwavesvew.MainActivity">
 
     <ImageSwitcher
@@ -29,7 +30,7 @@
 
         app:waveColor="#7eaeaeae"
         app:barHeight="0dp"
-
+        app:fallAutomatically="false"
         />
 
     <com.duan.library.BarWavesView
@@ -48,6 +49,8 @@
         app:barColor="#ffffff"
         app:waveColor="#ff00bb"
         app:barHeight="2px"
+
+        app:fallAutomatically="false"
         />
 
 
@@ -77,6 +80,8 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:waveColor="#ffd500"
+
+            app:fallAutomatically="false"
 
             app:waveInterval="3dp"
             app:waveMinHeight="30dp"
