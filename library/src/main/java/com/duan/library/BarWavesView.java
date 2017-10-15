@@ -14,13 +14,10 @@ import android.os.Parcelable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import java.util.Arrays;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by DuanJiaNing on 2017/9/24.
@@ -217,7 +214,7 @@ public class BarWavesView extends View {
                 if (mWaveWidth > sMIN_WAVE_WIDTH) {
                     mWaveWidth--; // 其次选择调整波浪条宽度
                 } else {
-                    width++; // 万不得已选择调整设置的宽度
+                    width++; // 再次选择调整设置的宽度
                 }
             }
         }
@@ -228,17 +225,17 @@ public class BarWavesView extends View {
 
         while (mWaveMinHeight + mWaveRange + mBarHeight > height) {
             if (mBarHeight > sMIN_BAR_HEIGHT) {
-                mBarHeight--;
+                mBarHeight--; //首选调整横条高度
                 continue;
             }
 
             if (mWaveMinHeight > sMIN_WAVE_HEIGHT) {
-                mWaveMinHeight--;
+                mWaveMinHeight--; // 其次选择调整波浪条的最小高度
                 continue;
             }
 
             if (mWaveRange > sMIN_WAVE_RANGE) {
-                mWaveRange--;
+                mWaveRange--; // 再次选择调整波浪条极差
             }
         }
     }
@@ -397,7 +394,6 @@ public class BarWavesView extends View {
         ss.waveColors = mWaveColors;
         ss.waveHeight = mWaveHeight;
 
-        Log.i(TAG, "onSaveInstanceState: " + ss.toString());
         return ss;
     }
 
@@ -419,8 +415,6 @@ public class BarWavesView extends View {
         if (mFallAnimEnable) {
             setFallDuration(mFallDuration);
         }
-
-        Log.i(TAG, "onRestoreInstanceState: " + ss.toString());
 
         requestLayout();
     }
